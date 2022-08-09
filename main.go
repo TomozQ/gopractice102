@@ -32,11 +32,22 @@ func main () {
 	// myData.Data = []int{10, 20, 30}
 	// fmt.Println(myData)
 
-	taro := Mydata{"Taro", []int{10, 20, 30}}
-	hanako := Mydata{
-		Name: "Hanako",
-		Data: []int{90, 80, 70},
+	taro := Mydata{
+		"Taro",
+		[]int{90, 80, 70},
 	}
 	fmt.Println(taro)
-	fmt.Println(hanako)
+	// taroのポインタを渡す
+	rev(&taro)
+	fmt.Println(taro)
+}
+
+func rev (md *Mydata) {	// ポインタを受ける（Mydata型の値が格納されているポインタ）
+	// *mdでポインタの中の値を取得する
+	od := (*md).Data
+	nd := []int{}
+	for i := len(od) - 1; i >= 0; i-- {
+		nd = append(nd, od[i])
+	}
+	md.Data = nd
 }
