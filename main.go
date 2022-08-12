@@ -2,23 +2,51 @@ package main
 
 import (
 	"fmt"
+	"hello"
+	"strconv"
 )
 
-type Mydata struct {
-	Name string
-	Data []int
+type intp int
+
+func (num intp) IsPrime () bool {
+	n := int(num)
+	for i := 2; i <= (n/2); i++ {
+		if n%i == 0 {
+			return false
+		}
+	}
+	return true
 }
 
-func (md Mydata) PrintData() {	// (md Mydata)がレシーバーの指定
-	fmt.Println("*** Mydata ***")
-	fmt.Println("Name: ", md.Name)
-	fmt.Println("Data: ", md.Data)
-	fmt.Println("*** end ***")
+func (num intp) PrimeFactor() []int {
+	ar := []int{}
+	x := int(num)
+	n := 2
+
+	for x > n {
+		if x%n == 0 {
+			x /= n
+			ar = append(ar, n)
+		} else {
+			if n ==2 {
+				n ++
+			} else {
+				n += 2
+			}
+		}
+	}
+	ar = append(ar, x)
+	return ar
 }
 
 func main () {
-	taro := Mydata{
-		"Hanako", []int{98, 76, 54, 32, 10},
-	}
-	taro.PrintData()
+	s := hello.Input("type a number")
+	n, _ := strconv.Atoi(s)
+	x := intp(n)
+	fmt.Printf("%d [%t].\n", x, x.IsPrime())
+	fmt.Println(x.PrimeFactor())
+	x *= 2
+	x ++
+	fmt.Printf("%d [%t].\n", x, x.IsPrime())
+	fmt.Println(x.PrimeFactor())
 }
