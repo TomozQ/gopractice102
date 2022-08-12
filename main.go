@@ -28,26 +28,9 @@ type Mydata struct {
 }
 
 func main () {
-	// myData.Name = "Taro"
-	// myData.Data = []int{10, 20, 30}
-	// fmt.Println(myData)
-
-	taro := Mydata{
-		"Taro",
-		[]int{90, 80, 70},
-	}
+	taro := new(Mydata)
 	fmt.Println(taro)
-	// taroのポインタを渡す
-	rev(&taro)
+	taro.Name = "Taro"
+	taro.Data = make([]int, 5, 5)
 	fmt.Println(taro)
-}
-
-func rev (md *Mydata) {	// ポインタを受ける（Mydata型の値が格納されているポインタ）
-	// *mdでポインタの中の値を取得する
-	od := (*md).Data
-	nd := []int{}
-	for i := len(od) - 1; i >= 0; i-- {
-		nd = append(nd, od[i])
-	}
-	md.Data = nd
 }
