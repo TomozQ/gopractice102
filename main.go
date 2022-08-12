@@ -4,50 +4,94 @@ import (
 	"fmt"
 )
 
-// 構造体 複数の値をひとまとめにした値
-// struct {
-// 	'''変数宣言'''
+/*
+	interface
+	その構造体に必要なメソッドが必ず用意されていることを保証する
+	構造体に付加するメソッドをまとめたもの
+	typeとして作成する
+	type 名前 interface {
+		メソッドA
+		メソッドB
+		'''必要なだけ用意'''
+	}
+*/
 
-// }
+// Data is interface
+type Data interface {
+	Initial(name string, data []int)
+	PrintData()
+}
 
-// var 変数 struct { ...... }
-
-// var myData struct {
-// 	Name string
-// 	Data []int
-// }
-
-// 構造体をtypeで型として定義する
-// type 型名 struct {'''内容'''}
-// →　作成... 型名 {'''値の設定'''}
-
-// Mydata is structure 			「外部から利用可能」なもの（大文字で始まる名前）はコメントが必須
+// Mydata is struct
 type Mydata struct {
 	Name string
 	Data []int
 }
 
+// Initial is init method
+func (md *Mydata) Initial(name string, data []int) {
+	md.Name = name
+	md.Data = data
+}
+
+// PrintData is println all data.
+func (md *Mydata) PrintData() {
+	fmt.Println("Name: ", md.Name)
+	fmt.Println("Data: ", md.Data)
+}
+
+// Check is method
+func (md *Mydata) Check() {
+	fmt.Printf("check! [%s]", md.Name)
+}
+
 func main () {
-	// myData.Name = "Taro"
-	// myData.Data = []int{10, 20, 30}
-	// fmt.Println(myData)
+	var ob Mydata = Mydata{}
+	// var ob Data = new(Mydata)　	Data型のため’Check’メソッドは使用できない
+	/*
+		new関数は、これ自体は特定の方の値を作成するものではない。
+		代入する変数の方に合わせて値は扱われる。
+		ここでは
+		var ob Data
+		と変数が定義されているため、そこにnewで代入した値はData型の値と判断され、そう扱われるようになる。
 
-	taro := Mydata{
-		"Taro",
-		[]int{90, 80, 70},
-	}
-	fmt.Println(taro)
-	// taroのポインタを渡す
-	rev(&taro)
-	fmt.Println(taro)
+		逆に
+		var ob Data = Mydata{}
+		これは「Mydataの値をDate型の変数に代入しようとしている」としてエラーになる。
+
+		さらに
+		var ob Data = Data()
+		や
+		var ob Data = Data{}
+		これはいずれもエラーになる。
+		Dataはインターフェイスであり、一般的な構造体などとは違うもの。
+		インターフェイスは直接値を作成することはできない。
+		だからこそnewを使ってMydataを作成し、それをDataと推論させて変数に代入させている。
+	*/
+	ob.Initial("Sachiko", []int{55,66,77})
+	// ob.PrintData()
+	ob.Check()
 }
 
-func rev (md *Mydata) {	// ポインタを受ける（Mydata型の値が格納されているポインタ）
-	// *mdでポインタの中の値を取得する
-	od := (*md).Data
-	nd := []int{}
-	for i := len(od) - 1; i >= 0; i-- {
-		nd = append(nd, od[i])
+
+/*
+	関連メモ
+	-----------------------------------
+	number := 123
+	pointer := &number
+	value := *pointer
+
+	number -> int型の変数
+	pointer -> ポインタ型の変数（numberのアドレス）
+	value -> pointer(numberのアドレス)に入っている値
+	-----------------------------------
+*/
+
+/*
+	n := 123  		...int型の変数n
+	change2(&n)		...change2にnのポインタを渡す
+
+	func change2 (n *int) {		...int型の値が入ったポインタ型の引数n
+		*n *= 2									...ポインタの値に2をかける
 	}
-	md.Data = nd
-}
+*/
