@@ -7,14 +7,40 @@ import (
 // どんな値でも保管できる型
 type General interface {}
 
-func main () {
-	var v General
-	v = 123
-	fmt.Println(v)
-	v = 0.01
-	fmt.Println(v)
-	v = "Hello"
-	fmt.Println(v)
-	v = true
-	fmt.Println(v)
+// GData is holdinf General value.
+type GData interface {
+	Set(nm string, g General)
+	Print()
 }
+
+// GDataImpl is structure.
+type GDataImpl struct {
+	Name string
+	Data General
+}
+
+// Set is GDataImpl method.
+func (gd *GDataImpl) Set (nm string, g General) {
+	gd.Name = nm
+	gd.Data = g
+}
+
+// Print is GDataImpl method
+func (gd *GDataImpl) Print () {
+	fmt.Printf("<<%s>>", gd.Name)
+	fmt.Println(gd.Data)
+}
+
+func main () {
+	var data = []GDataImpl{}
+	data = append(data, GDataImpl{"Taro", 123})
+	data = append(data, GDataImpl{"Hanako", "hello!"})
+	data = append(data, GDataImpl{"Sachiko", []int{123, 456, 789}})
+	for _, ob := range data {
+		ob.Print()
+	}
+}
+
+/*
+	GDataImplのDataはGeneral型でどんな値でも保管できる。
+*/
