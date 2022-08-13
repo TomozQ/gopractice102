@@ -2,96 +2,86 @@ package main
 
 import (
 	"fmt"
+	"strings"
+	"strconv"
 )
 
-/*
-	interface
-	その構造体に必要なメソッドが必ず用意されていることを保証する
-	構造体に付加するメソッドをまとめたもの
-	typeとして作成する
-	type 名前 interface {
-		メソッドA
-		メソッドB
-		'''必要なだけ用意'''
-	}
-*/
-
-// Data is interface
+// Data is interface for Mydata.
 type Data interface {
-	Initial(name string, data []int)
+	SetValue(vals map[string]string)
 	PrintData()
 }
 
-// Mydata is struct
+// Mydata is structure.
 type Mydata struct {
 	Name string
 	Data []int
 }
 
-// Initial is init method
-func (md *Mydata) Initial(name string, data []int) {
-	md.Name = name
-	md.Data = data
+// SetValue is Mydata method.
+func (md *Mydata) SetValue (vals map[string]string) {
+	md.Name = vals["name"]
+	valt := strings.Split(vals["data"], " ")
+	vali := []int{}
+	for _, i := range valt {
+		n, _ := strconv.Atoi(i)
+		vali = append(vali, n)
+	}
+	md.Data = vali
 }
 
-// PrintData is println all data.
+// PrintData is Mydata method.
 func (md *Mydata) PrintData() {
 	fmt.Println("Name: ", md.Name)
 	fmt.Println("Data: ", md.Data)
 }
 
-// Check is method
-func (md *Mydata) Check() {
-	fmt.Printf("check! [%s]", md.Name)
+// Yourdata is structure.
+type Yourdata struct {
+	Name string
+	Mail string
+	Age int
+}
+
+// SetValue is Yourdata method.
+func (md *Yourdata) SetValue(vals map[string]string) {
+	md.Name = vals["name"]
+	md.Mail = vals["mail"]
+	n, _ := strconv.Atoi(vals["age"])
+	md.Age = n
+}
+
+// PrintData is Yourdata method.
+func (md *Yourdata) PrintData () {
+	fmt.Printf("I'm %s. (%d).\n", md.Name, md.Age)
+	fmt.Printf("mail: %s.\n", md.Mail)
 }
 
 func main () {
-	var ob Mydata = Mydata{}
-	// var ob Data = new(Mydata)　	Data型のため’Check’メソッドは使用できない
-	/*
-		new関数は、これ自体は特定の方の値を作成するものではない。
-		代入する変数の方に合わせて値は扱われる。
-		ここでは
-		var ob Data
-		と変数が定義されているため、そこにnewで代入した値はData型の値と判断され、そう扱われるようになる。
+	ob := [2]Data{}
+	ob[0] = new(Mydata)
+	ob[0].SetValue(map[string]string{
+		"name": "Sachiko",
+		"data": "55, 66, 77",
+	})
+	ob[1] = new(Yourdata)
+	ob[1].SetValue(map[string]string{
+		"name": "Mami",
+		"mail": "mami@mume.mo",
+		"age": "34",
+	})
 
-		逆に
-		var ob Data = Mydata{}
-		これは「Mydataの値をDate型の変数に代入しようとしている」としてエラーになる。
-
-		さらに
-		var ob Data = Data()
-		や
-		var ob Data = Data{}
-		これはいずれもエラーになる。
-		Dataはインターフェイスであり、一般的な構造体などとは違うもの。
-		インターフェイスは直接値を作成することはできない。
-		だからこそnewを使ってMydataを作成し、それをDataと推論させて変数に代入させている。
-	*/
-	ob.Initial("Sachiko", []int{55,66,77})
-	// ob.PrintData()
-	ob.Check()
+	for _, d := range ob {
+		d.PrintData()
+		fmt.Println()
+	}
 }
 
-
 /*
-	関連メモ
-	-----------------------------------
-	number := 123
-	pointer := &number
-	value := *pointer
+	MydataもYourdataどちらもSetValueとPrintDataメソッドを用意しているので
+	どちらもDataのinterfaceを実装しているということになる。
+	
+	同じインターフェイスを実装する場合、メソッドの引数や戻り値まで完全に一致していなければならない。
 
-	number -> int型の変数
-	pointer -> ポインタ型の変数（numberのアドレス）
-	value -> pointer(numberのアドレス)に入っている値
-	-----------------------------------
-*/
-
-/*
-	n := 123  		...int型の変数n
-	change2(&n)		...change2にnのポインタを渡す
-
-	func change2 (n *int) {		...int型の値が入ったポインタ型の引数n
-		*n *= 2									...ポインタの値に2をかける
-	}
+	「同じインターフェイス」の値としてまとめることで、同じ型の値のように扱える。
 */
