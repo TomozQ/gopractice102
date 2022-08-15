@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"reflect"
 )
 
 // General is all type data.
@@ -22,7 +23,10 @@ type NData struct {
 // Set is NData method.
 func (nd *NData) Set (nm string, g General) GData {
 	nd.Name = nm
-	nd.Data = g.(int)
+	// 引数gのKind型を調べる
+	if reflect.TypeOf(g).Kind() == reflect.Int {
+		nd.Data = g.(int)
+	}
 	return nd
 }
 
@@ -41,7 +45,9 @@ type SData struct {
 // Set is SData method.
 func (sd *SData) Set(nm string, g General) GData {
 	sd.Name = nm
-	sd.Data = g.(string)
+	if reflect.TypeOf(g).Kind() == reflect.String {
+		sd.Data = g.(string)
+	}
 	return sd
 }
 
@@ -54,8 +60,8 @@ func main () {
 	var data = []GData{}
 	data = append(data, new(NData).Set("Taro", 123))
 	data = append(data, new(SData).Set("Jiro", "hello!"))
-	data = append(data, new(NData).Set("Hanako", 98700))
-	data = append(data, new(SData).Set("Sachiko", "happy?"))
+	data = append(data, new(NData).Set("Hanako", "98700"))
+	data = append(data, new(SData).Set("Sachiko", []string{"happy?"}))
 	for _, ob := range data {
 		ob.Print()
 	}
