@@ -2,77 +2,33 @@ package main
 
 import (
 	"fmt"
-	"reflect"
 )
 
-// General is all type data.
-type General interface {}
+/*
+	チャンネルの作成
+	変数 := make(chan 型)
 
-// GData is holding General value.
-type GData interface {
-	Set(nm string, g General) GData
-	Print()
-}
+	チャンネルから値を取り出す
+	変数 := <-チャンネル
 
-// NData is structure.
-type NData struct {
-	Name string
-	Data []int
-}
+	値を追加する
+	チャンネル <- 値
+*/
 
-// Set is NData method.
-func (nd *NData) Set (nm string, g General) GData {
-	nd.Name = nm
-	// 引数gのKind型を調べる																	0が何型か
-	if reflect.TypeOf(g) == reflect.SliceOf(reflect.TypeOf(0)) {
-		nd.Data = g.([]int)
+// total is method.
+func total(n int, c chan int) {
+	t := 0
+	for i := 1; i <= n; i++ {
+		t += i
 	}
-	return nd
-}
-
-// Print is NData method
-func (nd *NData) Print () {
-	fmt.Printf("<<%s>>", nd.Name)
-	fmt.Println(nd.Data)
-}
-
-// SData is structure
-type SData struct {
-	Name string
-	Data []string
-}
-
-// Set is SData method.
-func (sd *SData) Set(nm string, g General) GData {
-	sd.Name = nm
-	// 																										""が何型か
-	if reflect.TypeOf(g) == reflect.SliceOf(reflect.TypeOf("")) {
-		sd.Data = g.([]string)
-	}
-	return sd
-}
-
-// Print is SData method.
-func (sd *SData) Print () {
-	fmt.Printf("* %s [%s] *\n", sd.Name, sd.Data)
+	c <- t
 }
 
 func main () {
-	var data = []GData{}
-	data = append(data, new(NData).Set("Taro", 123))
-	data = append(data, new(SData).Set("Jiro", []string{"hello!", "bye"}))
-	data = append(data, new(NData).Set("Hanako", 98700))
-	data = append(data, new(SData).Set("Sachiko", "happy?"))
-	for _, ob := range data {
-		ob.Print()
-	}
+	// channel生成
+	c := make(chan int)
+	// 並列処理でtotal関数に100とチャンネルを渡す
+	go total(100, c)
+	// チャンネルの中身を出力
+	fmt.Println("total: ", <-c)
 }
-
-/*
-	型アサーション
-	nd.Data = g.(int)
-	sd.Data = g.(string)
-	gはGeneral型だがこれによりint型やstring型としてDataに設定するようになっている。
-
-	空のインターフェイス型をうまく活用することで保持する値の異なる構造体を同一のインターフェイスとして扱えるようになる。
-*/
