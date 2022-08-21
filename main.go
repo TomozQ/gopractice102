@@ -1,6 +1,7 @@
 package main
 
 import (
+	"time"
 	"fmt"
 )
 
@@ -10,34 +11,47 @@ import (
 */
 
 // total is method.
-func total(n int, c chan int) {
+func total(c chan int) {
+	n := <-c
+	fmt.Println("n = ", n)
 	t := 0
 	for i := 1; i <= n; i++ {
 		t += i
 	}
-	c <- t
+	fmt.Println("total:", t)
 }
 
 func main () {
 	// channel生成
 	c := make(chan int)
-	// 並列処理でtotal関数に100とチャンネルを渡す
-	go total(1000, c)
-	go total(100, c)
-	go total(10, c)
+	// c <- 100
+	// go total(c)
+	
+	// Goルーチンでtotal関数を実行
+	go total(c)
+	/*
+		total関数を実行してからチャンネルに100を代入しているが
+		チャンネルはまだ値が用意されていない場合は、送られてくるまで処理を待つので
+		チャンネルに100が入ってからtotal関数の n := <-c が実行される。
+	*/
 
-	x,y,z := <-c, <-c, <-c
-	// チャンネルの中身を出力
-	fmt.Println(x, y, z)
+	c <- 100
+	time.Sleep(100 * time.Millisecond)
 }
 
 /*
 	出力結果
-	55 500500 5050
+	fatal error: all goroutines are asleep - deadlock!
+
+	goroutine 1 [chan send]:
+	main.main()
+
+	exit status 2
 */
 
 /*
-	先入先出なので「実行したスレッドにかかる時間」によって
-	実行時間が短いものから順に c <- t が実行され、スレッドが終了する。
-	「必ずGoルーチンを呼び出した順に値が追加されるわけではない」
+	チャンネルは双方で準備できてから使う
+	チャンネルは複数のスレッド間で値をやり取りするためのもの
+	これを正常に動作させるには値を送る側と受け取る側の双方向で値の準備ができていなければならない。
+	つまり、Goルーチンを実行した後でないとチャンネルは使えない。
 */
